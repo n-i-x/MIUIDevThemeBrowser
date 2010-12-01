@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:id="@+id/dialog_theme_preview_layout_root" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-<TextView android:id="@+id/dialog_theme_preview_theme_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="20px" android:text="@string/unknown_value"></TextView>
+<TextView android:id="@+id/dialog_theme_preview_theme_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="20px" android:text="@string/unknown_value" android:layout_centerHorizontal="true"></TextView>
 <HorizontalScrollView android:id="@+id/dialog_theme_preview_scroll" android:layout_height="350px" android:layout_width="fill_parent" android:scrollbars="horizontal" android:scrollbarAlwaysDrawHorizontalTrack="true" android:layout_below="@+id/dialog_theme_preview_theme_name">
 <RelativeLayout android:id="@+id/dialog_theme_preview_image_layout" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:gravity="center_horizontal">
 <ImageView android:id="@+id/ThemePreview01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/empty_preview" android:padding="5px"></ImageView>

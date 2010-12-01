@@ -21,56 +21,57 @@
 
 package com.miuidev.themebrowser;
 
+
 public class Theme {
-	   
-    private String themeName;
-    private String themeAuthor;
-    private String themeVersion;
-    private String themeSize;
-    private String themeURL;
-    private String themePreviewURL;
-    private String themeScreenshotURLs;
+	
+    private String theme_name;
+    private String theme_url;
+    private String theme_author;
+    private String theme_preview_url;
+    private String theme_size;
+    private String theme_version;
+    private String[] theme_screenshot_urls;
    
     public String getThemeName() {
-        return themeName;
+        return theme_name;
     }
-    public void setThemeName(String themeName) {
-        this.themeName = themeName;
-    }
-    public String getThemeAuthor() {
-        return themeAuthor;
-    }
-    public void setThemeAuthor(String themeAuthor) {
-        this.themeAuthor = themeAuthor;
-    }
-    public String getThemeVersion() {
-        return themeVersion;
-    }
-    public void setThemeVersion(String themeVersion) {
-        this.themeVersion = themeVersion;
-    }
-    public String getThemeSize() {
-        return themeSize;
-    }
-    public void setThemeSize(String themeSize) {
-        this.themeSize = themeSize;
+    public void setThemeName(String theme_name) {
+        this.theme_name = theme_name;
     }
     public String getThemeURL() {
-        return themeURL;
+        return theme_url;
     }
-    public void setThemeURL(String themeURL) {
-        this.themeURL = themeURL;
+    public void setThemeURL(String theme_url) {
+        this.theme_url = theme_url;
+    }
+    public String getThemeAuthor() {
+        return theme_author;
+    }
+    public void setThemeAuthor(String theme_author) {
+        this.theme_author = theme_author;
     }
     public String getThemePreviewURL() {
-        return themePreviewURL;
+        return theme_preview_url;
     }
-    public void setThemePreviewURL(String themePreviewURL) {
-        this.themePreviewURL = themePreviewURL;
+    public void setThemePreviewURL(String theme_preview_url) {
+        this.theme_preview_url = theme_preview_url;
     }
-    public String getThemeScreenshotURLs() {
-        return themeScreenshotURLs;
+    public String getThemeSize() {
+        return theme_size;
     }
-    public void setThemeScreenshotURLs(String themeScreenshotURLs) {
-        this.themeScreenshotURLs = themeScreenshotURLs;
+    public void setThemeSize(String theme_size) {
+        this.theme_size = theme_size;
+    }
+    public String getThemeVersion() {
+        return theme_version;
+    }
+    public void setThemeVersion(String theme_version) {
+        this.theme_version = theme_version;
+    }
+    public String[] ThemeScreenshotURLs() {
+        return theme_screenshot_urls;
+    }
+    public void setThemes(String[] theme_screenshot_urls) {
+        this.theme_screenshot_urls = theme_screenshot_urls;
     }
 }

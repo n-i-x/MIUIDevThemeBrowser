@@ -23,6 +23,8 @@ package com.miuidev.themebrowser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -44,6 +46,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 public class RecommendedThemesActivity extends ListActivity {
 
@@ -68,48 +72,28 @@ public class RecommendedThemesActivity extends ListActivity {
             }
         };
 
-        Thread thread =  new Thread(null, viewThemes, "ThemeListRetrieve");
+        Thread thread =  new Thread(null, viewThemes, "ThemeListGrabber");
         thread.start();
         m_ProgressDialog = ProgressDialog.show(RecommendedThemesActivity.this,    
-              "Please wait...", "Retrieving data ...", true);
+              "Please wait...", "Downloading Theme list...", true);
 
     }
 
     private void getThemes(){
         try{
             m_themes = new ArrayList<Theme>();
-            Theme t1 = new Theme();
-            t1.setThemeName("Theme 1");
-            t1.setThemeAuthor("n_i_x");
-            t1.setThemeVersion("1.0");
-            t1.setThemeSize("1.1mb");
-            t1.setThemeURL("http://www.savoxis.com/miuinix/swg-v1.2.zip");
-            t1.setThemePreviewURL("http://www.savoxis.com/miuinix/0.png");
-            Theme t2 = new Theme();
-            t2.setThemeName("Theme 2");
-            t2.setThemeAuthor("n_i_x");
-            t2.setThemeVersion("1.1");
-            t2.setThemeSize("1.2mb");
-            Theme t3 = new Theme();
-            t3.setThemeName("Theme 3");
-            t3.setThemeAuthor("n_i_x");
-            t3.setThemeVersion("1.1");
-            t3.setThemeSize("1.2mb");
-            Theme t4 = new Theme();
-            t4.setThemeName("Theme 4");
-            t4.setThemeAuthor("n_i_x");
-            t4.setThemeVersion("1.1");
-            t4.setThemeSize("1.2mb");
-            Theme t5 = new Theme();
-            t5.setThemeName("Theme 5");
-            t5.setThemeAuthor("n_i_x");
-            t5.setThemeVersion("1.1");
-            t5.setThemeSize("1.2mb");
-            m_themes.add(t1);
-            m_themes.add(t2);
-            m_themes.add(t3);
-            m_themes.add(t4);
-            m_themes.add(t5);
+            
+            Log.i("ThemeGrabber", "Json Parser started..");
+            Gson gson = new Gson();
+            Reader r = new InputStreamReader(OpenHttpConnection("http://www.miui-dev.com/themes.json?list=top_picks"));
+            Log.i("ThemeGrabber", r.toString());
+            ThemeList objs = gson.fromJson(r, ThemeList.class);
+            Log.i("ThemeGrabber", ""+objs.getThemes().size());
+            for(Theme theme : objs.getThemes()){
+            	Log.i("ThemeGrabber", theme.getThemeName() + " - " + theme.getThemeURL());
+            	m_themes.add(theme);
+            }
+            
             Thread.sleep(2000);
             Log.i("ARRAY", ""+ m_themes.size());
           } catch (Exception e) {
@@ -180,36 +164,35 @@ public class RecommendedThemesActivity extends ListActivity {
             }
             return v;
         }
-        
-        private Bitmap LoadImage(String URL, BitmapFactory.Options options) {       
-			Bitmap bitmap = null;
-			InputStream in = null;       
-				try {
-					in = OpenHttpConnection(URL);
-			        bitmap = BitmapFactory.decodeStream(in, null, options);
-			        in.close();
-			    } catch (IOException e1) {
-			    }
-			    return bitmap;               
-        }
-        
-        private InputStream OpenHttpConnection(String strURL) throws IOException {
-        	InputStream inputStream = null;
-        	URL url = new URL(strURL);
-        	URLConnection conn = url.openConnection();
+    }
+    
+    public Bitmap LoadImage(String URL, BitmapFactory.Options options) {       
+		Bitmap bitmap = null;
+		InputStream in = null;       
+			try {
+				in = OpenHttpConnection(URL);
+		        bitmap = BitmapFactory.decodeStream(in, null, options);
+		        in.close();
+		    } catch (IOException e1) {
+		    }
+		    return bitmap;               
+    }
+    
+    public InputStream OpenHttpConnection(String strURL) throws IOException {
+    	InputStream inputStream = null;
+    	URL url = new URL(strURL);
+    	URLConnection conn = url.openConnection();
 
-        	try {
-        		HttpURLConnection httpConn = (HttpURLConnection)conn;
-        		httpConn.setRequestMethod("GET");
-        		httpConn.connect();
+    	try {
+    		HttpURLConnection httpConn = (HttpURLConnection)conn;
+    		httpConn.setRequestMethod("GET");
+    		httpConn.connect();
 
-        		if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-        			inputStream = httpConn.getInputStream();
-        		}
-        	} catch (Exception ex) {}
-        	return inputStream;
-        }
-        
+    		if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+    			inputStream = httpConn.getInputStream();
+    		}
+    	} catch (Exception ex) {}
+    	return inputStream;
     }
     
     @Override
