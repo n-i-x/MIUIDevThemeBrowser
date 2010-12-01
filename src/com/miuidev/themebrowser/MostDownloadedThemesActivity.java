@@ -1,3 +1,24 @@
+/**
+ * This file is part of MIUIDevThemeBrowser.
+ *
+ *  MIUIDevThemeBrowser is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  MIUIDevThemeBrowser is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with MIUIDevThemeBrowser.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *  Copyright (c) 2010 miui-dev.com, All rights reserved.
+ *  Author: n_i_x (nix@miui-dev.com)
+ *  Website: http://www.miui-dev.com
+ */
+
 package com.miuidev.themebrowser;
 
 import java.util.ArrayList;
@@ -25,7 +46,6 @@ public class MostDownloadedThemesActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        String jString = "[{\"name\": \"Theme 1\", \"url\": \"http://www.savoxis.com/miuinix/swg-v1.2.zip\", \"version\": \"1.0\", \"developer\": \"n_i_x\", \"screenshots\": [\"http://a.imageshack.us/img291/56/snap20100826125837.png\", \"http://a.imageshack.us/img829/4162/snap20100826125826.png\"], \"thumbnail\": \"http://img829.imageshack.us/img829/1894/thumbnaild.png\", \"size\": \"3.9mb\"}]";
         m_themes = new ArrayList<Theme>();
         this.m_adapter = new ThemeArrayAdapter(this, R.layout.theme_list_item, m_themes);
                 setListAdapter(this.m_adapter);
