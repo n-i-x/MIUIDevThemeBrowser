@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_mostdownloaded_themes">Most Downloaded</string>
+    <string name="tab_all_themes">All</string>
+    <string name="tab_recommended_themes">Top Picks</string>
+    <string name="main_no_items">No items to display</string>
+    <string name="label_theme_version">Version:</string>
+    <string name="label_theme_size">Size:</string>
+    <string name="unknown_value">Unknown</string>
+    <string name="label_theme_author">Author:</string>
+    <string name="label_theme_name">Theme Name:</string>
+    <string name="hello">Hello World, MainActivity!</string>
+    <string name="app_name">MIUI-Dev Theme Browser</string>
+</resources>
