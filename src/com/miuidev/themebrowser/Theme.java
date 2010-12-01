@@ -29,6 +29,7 @@ public class Theme {
     private String themeSize;
     private String themeURL;
     private String themePreviewURL;
+    private String themeScreenshotURLs;
    
     public String getThemeName() {
         return themeName;
@@ -65,5 +66,11 @@ public class Theme {
     }
     public void setThemePreviewURL(String themePreviewURL) {
         this.themePreviewURL = themePreviewURL;
+    }
+    public String getThemeScreenshotURLs() {
+        return themeScreenshotURLs;
+    }
+    public void setThemeScreenshotURLs(String themeScreenshotURLs) {
+        this.themeScreenshotURLs = themeScreenshotURLs;
     }
 }

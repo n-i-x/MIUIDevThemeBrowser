@@ -28,9 +28,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -38,13 +40,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class RecommendedThemesActivity extends ListActivity {
 
@@ -69,22 +68,10 @@ public class RecommendedThemesActivity extends ListActivity {
             }
         };
 
-        Thread thread =  new Thread(null, viewThemes, "MagentoBackground");
+        Thread thread =  new Thread(null, viewThemes, "ThemeListRetrieve");
         thread.start();
         m_ProgressDialog = ProgressDialog.show(RecommendedThemesActivity.this,    
               "Please wait...", "Retrieving data ...", true);
-        
-        ListView lv = getListView();
-        lv.setTextFilterEnabled(true);
-
-        lv.setOnItemClickListener(new OnItemClickListener() {
-          public void onItemClick(AdapterView<?> parent, View view,
-              int position, long id) {
-            // When clicked, show a toast with the TextView text
-            Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-                Toast.LENGTH_SHORT).show();
-          }
-        });
 
     }
 
@@ -223,6 +210,49 @@ public class RecommendedThemesActivity extends ListActivity {
         	return inputStream;
         }
         
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+    	TextView themeNameText = (TextView) v.findViewById(R.id.ThemeName);
+        TextView themeAuthorText = (TextView) v.findViewById(R.id.ThemeAuthorValue);
+        TextView themeVersionText = (TextView) v.findViewById(R.id.ThemeVersionValue);
+        TextView themeSizeText = (TextView) v.findViewById(R.id.ThemeSizeValue);
+        TextView themeURLText = (TextView) v.findViewById(R.id.ThemeURL);
+        
+	    String themeName = (String) themeNameText.getText();
+		String themeAuthor = (String) themeAuthorText.getText();
+	    String themeVersion = (String) themeVersionText.getText();
+	    String themeSize = (String) themeSizeText.getText();
+	    String themeURL = (String) themeURLText.getText();
+	    
+	    AlertDialog.Builder builder;
+	    AlertDialog alertDialog;
+
+	    LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+	    View layout = inflater.inflate(R.layout.dialog_theme_preview,
+	                                   (ViewGroup) findViewById(R.id.dialog_theme_preview_layout_root));
+
+	    TextView text = (TextView) layout.findViewById(R.id.dialog_theme_preview_theme_name);
+	    text.setText(themeName);
+
+	    builder = new AlertDialog.Builder(this);
+	    builder.setView(layout);
+	    builder.setTitle("Download Theme").setCancelable(false)
+	       .setPositiveButton("Download", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	                dialog.cancel();
+	           }
+	       })
+	       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	                dialog.cancel();
+	           }
+	       });
+
+	    alertDialog = builder.create();
+	    alertDialog.show();
+	    
     }
 }
 

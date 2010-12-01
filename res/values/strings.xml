@@ -11,4 +11,6 @@
     <string name="label_theme_name">Theme Name:</string>
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">MIUI-Dev Theme Browser</string>
+<string name="download">Download</string>
+<string name="cancel">Cancel</string>
 </resources>

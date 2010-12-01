@@ -55,7 +55,8 @@ public class AllThemesActivity extends ListActivity {
                 getThemes();
             }
         };
-    Thread thread =  new Thread(null, viewThemes, "MagentoBackground");
+
+    Thread thread =  new Thread(null, viewThemes, "ThemeListRetrieve");
         thread.start();
         m_ProgressDialog = ProgressDialog.show(AllThemesActivity.this,    
               "Please wait...", "Retrieving data ...", true);
