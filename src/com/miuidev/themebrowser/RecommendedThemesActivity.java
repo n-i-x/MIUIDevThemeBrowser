@@ -23,8 +23,6 @@ package com.miuidev.themebrowser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -48,6 +46,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.miuidev.themebrowser.RestClient.RequestMethod;
 
 public class RecommendedThemesActivity extends ListActivity {
 
@@ -85,9 +84,12 @@ public class RecommendedThemesActivity extends ListActivity {
             
             Log.i("ThemeGrabber", "Json Parser started..");
             Gson gson = new Gson();
-            Reader r = new InputStreamReader(OpenHttpConnection("http://www.miui-dev.com/themes.json?list=top_picks"));
-            Log.i("ThemeGrabber", r.toString());
-            ThemeList objs = gson.fromJson(r, ThemeList.class);
+            final String themeJSON = "http://www.miui-dev.com/themes.json?list=top_picks";
+            RestClient client = new RestClient(themeJSON);
+            client.Execute(RequestMethod.GET);
+            Log.i("ThemeGrabber", client.toString());
+            Log.i("ThemeGrabber", "Received: " + client.getResponse());
+            ThemeList objs = gson.fromJson(client.getResponse(), ThemeList.class);
             Log.i("ThemeGrabber", ""+objs.getThemes().size());
             for(Theme theme : objs.getThemes()){
             	Log.i("ThemeGrabber", theme.getThemeName() + " - " + theme.getThemeURL());
@@ -137,7 +139,6 @@ public class RecommendedThemesActivity extends ListActivity {
                 TextView themeAuthorText = (TextView) v.findViewById(R.id.ThemeAuthorValue);
                 TextView themeVersionText = (TextView) v.findViewById(R.id.ThemeVersionValue);
                 TextView themeSizeText = (TextView) v.findViewById(R.id.ThemeSizeValue);
-                TextView themeURLText = (TextView) v.findViewById(R.id.ThemeURL);
                 ImageView themePreviewImage = (ImageView) v.findViewById(R.id.ImageView01);
                 if (themeNameText != null) {
                       themeNameText.setText(theme.getThemeName());
@@ -150,9 +151,6 @@ public class RecommendedThemesActivity extends ListActivity {
                 }
                 if(themeSizeText != null){
                     themeSizeText.setText(theme.getThemeSize());
-                }
-                if(themeURLText != null){
-                    themeURLText.setText(theme.getThemeURL());
                 }
                 if(theme.getThemePreviewURL() != null){
                 	BitmapFactory.Options bmOptions;
@@ -197,17 +195,9 @@ public class RecommendedThemesActivity extends ListActivity {
     
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-    	TextView themeNameText = (TextView) v.findViewById(R.id.ThemeName);
-        TextView themeAuthorText = (TextView) v.findViewById(R.id.ThemeAuthorValue);
-        TextView themeVersionText = (TextView) v.findViewById(R.id.ThemeVersionValue);
-        TextView themeSizeText = (TextView) v.findViewById(R.id.ThemeSizeValue);
-        TextView themeURLText = (TextView) v.findViewById(R.id.ThemeURL);
-        
-	    String themeName = (String) themeNameText.getText();
-		String themeAuthor = (String) themeAuthorText.getText();
-	    String themeVersion = (String) themeVersionText.getText();
-	    String themeSize = (String) themeSizeText.getText();
-	    String themeURL = (String) themeURLText.getText();
+
+	    Theme theme = m_themes.get(position);
+	    String themeName = theme.getThemeName();
 	    
 	    AlertDialog.Builder builder;
 	    AlertDialog alertDialog;
