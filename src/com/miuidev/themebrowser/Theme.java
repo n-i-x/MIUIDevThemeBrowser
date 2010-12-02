@@ -68,10 +68,10 @@ public class Theme {
     public void setThemeVersion(String theme_version) {
         this.theme_version = theme_version;
     }
-    public String[] ThemeScreenshotURLs() {
+    public String[] getThemeScreenshotURLs() {
         return theme_screenshot_urls;
     }
-    public void setThemes(String[] theme_screenshot_urls) {
+    public void setThemeScreenshotURLs(String[] theme_screenshot_urls) {
         this.theme_screenshot_urls = theme_screenshot_urls;
     }
 }

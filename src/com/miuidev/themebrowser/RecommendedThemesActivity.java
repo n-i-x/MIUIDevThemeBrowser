@@ -21,8 +21,12 @@
 
 package com.miuidev.themebrowser;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,7 +39,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +56,7 @@ import com.miuidev.themebrowser.RestClient.RequestMethod;
 
 public class RecommendedThemesActivity extends ListActivity {
 
+	private ProgressDialog DownloadProgress = null;
 	private ProgressDialog m_ProgressDialog = null;
     private ArrayList<Theme> m_themes = null;
     private ThemeArrayAdapter m_adapter;
@@ -84,7 +91,7 @@ public class RecommendedThemesActivity extends ListActivity {
             
             Log.i("ThemeGrabber", "Json Parser started..");
             Gson gson = new Gson();
-            final String themeJSON = "http://www.miui-dev.com/themes.json?list=top_picks";
+            final String themeJSON = "http://www.miui-dev.com/themes/themes.json?list=top_picks";
             RestClient client = new RestClient(themeJSON);
             client.Execute(RequestMethod.GET);
             Log.i("ThemeGrabber", client.toString());
@@ -139,7 +146,7 @@ public class RecommendedThemesActivity extends ListActivity {
                 TextView themeAuthorText = (TextView) v.findViewById(R.id.ThemeAuthorValue);
                 TextView themeVersionText = (TextView) v.findViewById(R.id.ThemeVersionValue);
                 TextView themeSizeText = (TextView) v.findViewById(R.id.ThemeSizeValue);
-                ImageView themePreviewImage = (ImageView) v.findViewById(R.id.ImageView01);
+                ImageView themePreviewImage = (ImageView) v.findViewById(R.id.ListPreviewImage);
                 if (themeNameText != null) {
                       themeNameText.setText(theme.getThemeName());
                 }
@@ -171,8 +178,7 @@ public class RecommendedThemesActivity extends ListActivity {
 				in = OpenHttpConnection(URL);
 		        bitmap = BitmapFactory.decodeStream(in, null, options);
 		        in.close();
-		    } catch (IOException e1) {
-		    }
+		    } catch (IOException e1) {}
 		    return bitmap;               
     }
     
@@ -197,7 +203,9 @@ public class RecommendedThemesActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
 
 	    Theme theme = m_themes.get(position);
-	    String themeName = theme.getThemeName();
+	    final String themeName = theme.getThemeName();
+	    final String themeURL = theme.getThemeURL();
+	    final String[] theme_screenshot_urls = theme.getThemeScreenshotURLs();
 	    
 	    AlertDialog.Builder builder;
 	    AlertDialog alertDialog;
@@ -208,15 +216,31 @@ public class RecommendedThemesActivity extends ListActivity {
 
 	    TextView text = (TextView) layout.findViewById(R.id.dialog_theme_preview_theme_name);
 	    text.setText(themeName);
+	    
+	    for(int i=0; i<theme_screenshot_urls.length; i++) {
+	    	System.out.println(theme_screenshot_urls[i]);
+	    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
+	    	System.out.println("Resource id for ThemePreview" + i + ": " + resID);
+	    	BitmapFactory.Options bmOptions;
+            bmOptions = new BitmapFactory.Options();
+            bmOptions.inSampleSize = 1;
+            Bitmap bm = LoadImage(theme_screenshot_urls[i], bmOptions);
+            ImageView themePreviewImage = (ImageView) layout.findViewById(resID);
+        	themePreviewImage.setImageBitmap(bm);
+        	themePreviewImage.setVisibility(View.VISIBLE);
+	    }
 
 	    builder = new AlertDialog.Builder(this);
 	    builder.setView(layout);
 	    builder.setTitle("Download Theme").setCancelable(false)
 	       .setPositiveButton("Download", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
-	                dialog.cancel();
+	                DownloadFile DownloadFile = new DownloadFile();
+	                DownloadFile.execute(themeURL);
+	                dialog.dismiss();
 	           }
 	       })
+	       
 	       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	                dialog.cancel();
@@ -226,6 +250,68 @@ public class RecommendedThemesActivity extends ListActivity {
 	    alertDialog = builder.create();
 	    alertDialog.show();
 	    
+    }
+    
+    private class DownloadFile extends AsyncTask<String, String, String>{
+
+    	private final File PATH = Environment.getExternalStorageDirectory();
+    	
+        @Override
+        protected String doInBackground(String... fileURL) {
+            int count;
+
+            try {
+            	Log.i("DownloadFile", "URL: " + fileURL);
+                URL url = new URL(fileURL[0]);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+
+                int contentLength = connection.getContentLength();
+                Log.i("DownloadFile", "ContentLength: " + contentLength);
+
+                InputStream input = new BufferedInputStream(url.openStream());
+                String filename = url.getFile();
+                Log.i("DownloadFile", "Filename: " + filename);
+                String outputFilename = PATH + "/theme.zip";
+                Log.i("DownloadFile", "Output filename: " + outputFilename);
+                OutputStream output = new FileOutputStream(outputFilename);
+                Log.i("DownloadFile", "Opened OutputStream");
+
+                byte[] data = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    Log.i("DownloadFile", "Publishing progress...");
+                    publishProgress(""+(int)total*100/contentLength);
+                    output.write(data, 0, count);
+                }
+
+                output.flush();
+                output.close();
+                input.close();
+            } catch (Exception e) {}
+            return null;
+        }
+
+        @Override
+        public void onProgressUpdate(String... args) {
+        	Log.i("ThemeDownloader", "Updating progress bar"); 
+        	DownloadProgress.setProgress((int) Float.parseFloat(args[0]));
+        }
+        
+    	protected void onPreExecute() {
+    		DownloadProgress = new ProgressDialog(RecommendedThemesActivity.this);
+    		DownloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    		DownloadProgress.setMessage("Downloading Theme...");
+    		DownloadProgress.setCancelable(false);
+    		DownloadProgress.show();
+    	}
+        
+        protected void onPostExecute(Void unused) {
+        	DownloadProgress.dismiss();
+        }
     }
 }
 
