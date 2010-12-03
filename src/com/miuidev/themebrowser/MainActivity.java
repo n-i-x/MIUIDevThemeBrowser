@@ -21,10 +21,21 @@
 
 package com.miuidev.themebrowser;
 
+import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 public class MainActivity extends TabActivity {
 
@@ -47,5 +58,60 @@ public class MainActivity extends TabActivity {
         tabHost.addTab(spec);
 
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        case R.id.MenuAbout:
+            displayAbout();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    private void displayAbout() {
+    	AlertDialog.Builder builder;
+    	AlertDialog alertDialog;
+
+    	LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+    	View layout = inflater.inflate(R.layout.dialog_about,
+    	                               (ViewGroup) findViewById(R.id.DialogAboutRelativeLayout));
+
+    	TextView text = (TextView) layout.findViewById(R.id.AboutVersionValue);
+    	text.setText(getVersionName());
+
+	    builder = new AlertDialog.Builder(this);
+	    builder.setView(layout);
+	    builder.setCancelable(false)
+	       .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	                dialog.dismiss();
+	           }
+	       });
+	    alertDialog = builder.create();
+	    alertDialog.show();
+		
+	}
+
+	private String getVersionName() {
+        String version = "";
+        try {
+          PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+          version = pi.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+          version = "Package name not found";
+        }
+        return version;
+      }
+
 }
 

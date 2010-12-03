@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="dialog_about_version">Version:</string>
+    <string name="menu_theme_manager">Theme Manager</string>
+    <string name="menu_about">About</string>
     <string name="tab_mostdownloaded_themes">Most Downloaded</string>
     <string name="tab_all_themes">All</string>
     <string name="tab_recommended_themes">Top Picks</string>
@@ -16,4 +19,6 @@
 <string name="dialog_please_wait">Please Wait</string>
 <string name="dialog_download_theme_list">Downloading Theme List</string><string name="dialog_download_theme_details">Downloading Theme Details</string><string name="dialog_download_theme">Download Theme</string>
 <string name="dialog_downloading_theme">Downloading Theme</string>
+<string name="about">About</string>
+<string name="ok">OK</string>
 </resources>
