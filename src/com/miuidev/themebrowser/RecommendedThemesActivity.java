@@ -1,5 +1,5 @@
 /**
- * This file is part of MIUIDevThemeBrowser.
+* This file is part of MIUIDevThemeBrowser.
  *
  *  MIUIDevThemeBrowser is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,12 +21,10 @@
 
 package com.miuidev.themebrowser;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -56,10 +54,11 @@ import com.miuidev.themebrowser.RestClient.RequestMethod;
 
 public class RecommendedThemesActivity extends ListActivity {
 
-	private ProgressDialog DownloadProgress = null;
-	private ProgressDialog m_ProgressDialog = null;
-    private ArrayList<Theme> m_themes = null;
-    private ThemeArrayAdapter m_adapter;
+	private ProgressDialog themeDownloadProgress = null;
+	private ProgressDialog themeInfoDialog = null;
+	private ProgressDialog themeListDownloadProgress = null;
+    private ArrayList<Theme> themeList = null;
+    private ThemeArrayAdapter themeArrayAdapter;
     private Runnable viewThemes;
     
     /** Called when the activity is first created. */
@@ -68,9 +67,9 @@ public class RecommendedThemesActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        m_themes = new ArrayList<Theme>();
-        this.m_adapter = new ThemeArrayAdapter(this, R.layout.theme_list_item, m_themes);
-        setListAdapter(this.m_adapter);
+        themeList = new ArrayList<Theme>();
+        this.themeArrayAdapter = new ThemeArrayAdapter(this, R.layout.theme_list_item, themeList);
+        setListAdapter(this.themeArrayAdapter);
        
         viewThemes = new Runnable(){
             public void run() {
@@ -80,31 +79,26 @@ public class RecommendedThemesActivity extends ListActivity {
 
         Thread thread =  new Thread(null, viewThemes, "ThemeListGrabber");
         thread.start();
-        m_ProgressDialog = ProgressDialog.show(RecommendedThemesActivity.this,    
-              "Please wait...", "Downloading Theme list...", true);
+        themeListDownloadProgress = ProgressDialog.show(RecommendedThemesActivity.this,    
+              getString(R.string.dialog_please_wait) + "...", getString(R.string.dialog_download_theme_list)  + "...", true);
 
     }
 
     private void getThemes(){
         try{
-            m_themes = new ArrayList<Theme>();
+            themeList = new ArrayList<Theme>();
             
-            Log.i("ThemeGrabber", "Json Parser started..");
             Gson gson = new Gson();
-            final String themeJSON = "http://www.miui-dev.com/themes/themes.json?list=top_picks";
+            final String themeJSON = "http://www.miui-dev.com/themes/themes.json?list=all";
             RestClient client = new RestClient(themeJSON);
             client.Execute(RequestMethod.GET);
-            Log.i("ThemeGrabber", client.toString());
-            Log.i("ThemeGrabber", "Received: " + client.getResponse());
             ThemeList objs = gson.fromJson(client.getResponse(), ThemeList.class);
-            Log.i("ThemeGrabber", ""+objs.getThemes().size());
             for(Theme theme : objs.getThemes()){
-            	Log.i("ThemeGrabber", theme.getThemeName() + " - " + theme.getThemeURL());
-            	m_themes.add(theme);
+            	themeList.add(theme);
             }
             
             Thread.sleep(2000);
-            Log.i("ARRAY", ""+ m_themes.size());
+            Log.i("ARRAY", ""+ themeList.size());
           } catch (Exception e) {
             Log.e("BACKGROUND_PROC", e.getMessage());
           }
@@ -114,13 +108,13 @@ public class RecommendedThemesActivity extends ListActivity {
     private Runnable returnRes = new Runnable() {
 
         public void run() {
-            if(m_themes != null && m_themes.size() > 0){
-                m_adapter.notifyDataSetChanged();
-                for(int i=0;i<m_themes.size();i++)
-                m_adapter.add(m_themes.get(i));
+            if(themeList != null && themeList.size() > 0){
+                themeArrayAdapter.notifyDataSetChanged();
+                for(int i=0;i<themeList.size();i++)
+                themeArrayAdapter.add(themeList.get(i));
             }
-            m_ProgressDialog.dismiss();
-            m_adapter.notifyDataSetChanged();
+            themeListDownloadProgress.dismiss();
+            themeArrayAdapter.notifyDataSetChanged();
         }
       };
 
@@ -202,7 +196,7 @@ public class RecommendedThemesActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
 
-	    Theme theme = m_themes.get(position);
+	    Theme theme = themeList.get(position);
 	    final String themeName = theme.getThemeName();
 	    final String themeURL = theme.getThemeURL();
 	    final String[] theme_screenshot_urls = theme.getThemeScreenshotURLs();
@@ -217,10 +211,11 @@ public class RecommendedThemesActivity extends ListActivity {
 	    TextView text = (TextView) layout.findViewById(R.id.dialog_theme_preview_theme_name);
 	    text.setText(themeName);
 	    
+	    themeInfoDialog = ProgressDialog.show(RecommendedThemesActivity.this,    
+	              themeName, getString(R.string.dialog_download_theme_details) + "...", true);
+		
 	    for(int i=0; i<theme_screenshot_urls.length; i++) {
-	    	System.out.println(theme_screenshot_urls[i]);
 	    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
-	    	System.out.println("Resource id for ThemePreview" + i + ": " + resID);
 	    	BitmapFactory.Options bmOptions;
             bmOptions = new BitmapFactory.Options();
             bmOptions.inSampleSize = 1;
@@ -229,19 +224,21 @@ public class RecommendedThemesActivity extends ListActivity {
         	themePreviewImage.setImageBitmap(bm);
         	themePreviewImage.setVisibility(View.VISIBLE);
 	    }
+	    
+	    themeInfoDialog.dismiss();
 
 	    builder = new AlertDialog.Builder(this);
 	    builder.setView(layout);
-	    builder.setTitle("Download Theme").setCancelable(false)
-	       .setPositiveButton("Download", new DialogInterface.OnClickListener() {
+	    builder.setTitle(getString(R.string.dialog_download_theme)).setCancelable(false)
+	       .setPositiveButton(getString(R.string.download), new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
-	                DownloadFile DownloadFile = new DownloadFile();
+	                DownloadFileTask DownloadFile = new DownloadFileTask();
 	                DownloadFile.execute(themeURL);
 	                dialog.dismiss();
 	           }
 	       })
 	       
-	       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	       .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	                dialog.cancel();
 	           }
@@ -252,66 +249,67 @@ public class RecommendedThemesActivity extends ListActivity {
 	    
     }
     
-    private class DownloadFile extends AsyncTask<String, String, String>{
+    private class DownloadFileTask extends AsyncTask<String, String, String>{
 
-    	private final File PATH = Environment.getExternalStorageDirectory();
+    	private final File SDCARD = Environment.getExternalStorageDirectory();
     	
         @Override
         protected String doInBackground(String... fileURL) {
             int count;
 
             try {
-            	Log.i("DownloadFile", "URL: " + fileURL);
                 URL url = new URL(fileURL[0]);
-                URLConnection connection = url.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setDoOutput(true);
                 connection.connect();
 
                 int contentLength = connection.getContentLength();
-                Log.i("DownloadFile", "ContentLength: " + contentLength);
 
-                InputStream input = new BufferedInputStream(url.openStream());
-                String filename = url.getFile();
-                Log.i("DownloadFile", "Filename: " + filename);
-                String outputFilename = PATH + "/theme.zip";
-                Log.i("DownloadFile", "Output filename: " + outputFilename);
-                OutputStream output = new FileOutputStream(outputFilename);
-                Log.i("DownloadFile", "Opened OutputStream");
+                File outputDir = new File (SDCARD.getAbsoluteFile() + "/MIUI/theme");
+                outputDir.mkdirs();
+                String fileName = url.toString().substring( url.toString().lastIndexOf('/')+1, url.toString().length() );
+                File outputFileName = new File(outputDir, fileName);
+                FileOutputStream output = new FileOutputStream(outputFileName);
+                
+                InputStream input = connection.getInputStream();
 
-                byte[] data = new byte[1024];
+                byte[] buffer = new byte[1024];
 
                 long total = 0;
 
-                while ((count = input.read(data)) != -1) {
+                while ((count = input.read(buffer)) != -1) {
                     total += count;
-                    Log.i("DownloadFile", "Publishing progress...");
                     publishProgress(""+(int)total*100/contentLength);
-                    output.write(data, 0, count);
+                    output.write(buffer, 0, count);
                 }
 
                 output.flush();
                 output.close();
                 input.close();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            	Log.e("DownloadThemeTask", e.getMessage());
+            }
             return null;
         }
 
         @Override
         public void onProgressUpdate(String... args) {
-        	Log.i("ThemeDownloader", "Updating progress bar"); 
-        	DownloadProgress.setProgress((int) Float.parseFloat(args[0]));
+        	themeDownloadProgress.setProgress((int) Float.parseFloat(args[0]));
         }
         
+        @Override
     	protected void onPreExecute() {
-    		DownloadProgress = new ProgressDialog(RecommendedThemesActivity.this);
-    		DownloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    		DownloadProgress.setMessage("Downloading Theme...");
-    		DownloadProgress.setCancelable(false);
-    		DownloadProgress.show();
+    		themeDownloadProgress = new ProgressDialog(RecommendedThemesActivity.this);
+    		themeDownloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    		themeDownloadProgress.setMessage(getString(R.string.dialog_downloading_theme) + "...");
+    		themeDownloadProgress.setCancelable(false);
+    		themeDownloadProgress.show();
     	}
         
-        protected void onPostExecute(Void unused) {
-        	DownloadProgress.dismiss();
+        @Override
+        protected void onPostExecute(String unused) {
+        	themeDownloadProgress.dismiss();
         }
     }
 }
-

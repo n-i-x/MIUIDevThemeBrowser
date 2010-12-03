@@ -13,4 +13,7 @@
     <string name="app_name">MIUI-Dev Theme Browser</string>
 <string name="download">Download</string>
 <string name="cancel">Cancel</string>
+<string name="dialog_please_wait">Please Wait</string>
+<string name="dialog_download_theme_list">Downloading Theme List</string><string name="dialog_download_theme_details">Downloading Theme Details</string><string name="dialog_download_theme">Download Theme</string>
+<string name="dialog_downloading_theme">Downloading Theme</string>
 </resources>
