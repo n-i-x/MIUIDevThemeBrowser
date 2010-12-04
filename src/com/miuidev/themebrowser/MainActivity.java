@@ -39,6 +39,8 @@ import android.widget.TextView;
 
 public class MainActivity extends TabActivity {
 
+	public static final String BASEURL = "http://themes.miui-themes.com";
+	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,8 @@ public class MainActivity extends TabActivity {
         TabHost.TabSpec spec;
         Intent intent;
 
-        intent = new Intent().setClass(this, RecommendedThemesActivity.class);
-        spec = tabHost.newTabSpec("recommendedthemes").setIndicator(getString(R.string.tab_recommended_themes)).setContent(intent);
+        intent = new Intent().setClass(this, FeaturedThemesActivity.class);
+        spec = tabHost.newTabSpec("featuredthemes").setIndicator(getString(R.string.tab_featured_themes)).setContent(intent);
         tabHost.addTab(spec);
         
         intent = new Intent().setClass(this, AllThemesActivity.class);

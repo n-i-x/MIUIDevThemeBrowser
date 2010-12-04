@@ -13,7 +13,7 @@
         </activity>
         <activity android:name=".AllThemesActivity"></activity>
         <activity android:name=".MostDownloadedThemesActivity"></activity>
-    	<activity android:name=".RecommendedThemesActivity"></activity>
+    	<activity android:name=".FeaturedThemesActivity"></activity>
 
     </application>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

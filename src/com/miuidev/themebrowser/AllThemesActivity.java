@@ -48,15 +48,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.miuidev.themebrowser.RestClient.RequestMethod;
 
 public class AllThemesActivity extends ListActivity {
 
+
+	private AlertDialog alertDialog;
+	private View layoutDialog;
+	private ProgressDialog screenshotDownloadProgress = null;
 	private ProgressDialog themeDownloadProgress = null;
-	private ProgressDialog themeInfoDialog = null;
 	private ProgressDialog themeListDownloadProgress = null;
+	private ArrayList<Bitmap> themeScreenshotList = null;
     private ArrayList<Theme> themeList = null;
     private ThemeArrayAdapter themeArrayAdapter;
     private Runnable viewThemes;
@@ -89,7 +94,7 @@ public class AllThemesActivity extends ListActivity {
             themeList = new ArrayList<Theme>();
             
             Gson gson = new Gson();
-            final String themeJSON = "http://www.miui-dev.com/themes/themes.json?list=all";
+            final String themeJSON = MainActivity.BASEURL + "/allthemes.json";
             RestClient client = new RestClient(themeJSON);
             client.Execute(RequestMethod.GET);
             ThemeList objs = gson.fromJson(client.getResponse(), ThemeList.class);
@@ -110,7 +115,7 @@ public class AllThemesActivity extends ListActivity {
         public void run() {
             if(themeList != null && themeList.size() > 0){
                 themeArrayAdapter.notifyDataSetChanged();
-                for(int i=0;i<themeList.size();i++)
+                for(int i = 0; i < themeList.size(); i++)
                 themeArrayAdapter.add(themeList.get(i));
             }
             themeListDownloadProgress.dismiss();
@@ -196,39 +201,25 @@ public class AllThemesActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
 
-	    Theme theme = themeList.get(position);
+	    final Theme theme = themeList.get(position);
 	    final String themeName = theme.getThemeName();
+	    themeScreenshotList = new ArrayList<Bitmap>();
 	    final String themeURL = theme.getThemeURL();
 	    final String[] theme_screenshot_urls = theme.getThemeScreenshotURLs();
-	    
-	    AlertDialog.Builder builder;
-	    AlertDialog alertDialog;
 
 	    LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-	    View layout = inflater.inflate(R.layout.dialog_theme_preview,
-	                                   (ViewGroup) findViewById(R.id.dialog_theme_preview_layout_root));
+	    layoutDialog = inflater.inflate(R.layout.dialog_theme_preview,
+	                                         (ViewGroup) findViewById(R.id.dialog_theme_preview_layout_root));
 
-	    TextView text = (TextView) layout.findViewById(R.id.dialog_theme_preview_theme_name);
+	    TextView text = (TextView) layoutDialog.findViewById(R.id.dialog_theme_preview_theme_name);
 	    text.setText(themeName);
 	    
-	    themeInfoDialog = ProgressDialog.show(AllThemesActivity.this,    
-	              themeName, getString(R.string.dialog_download_theme_details) + "...", true);
-		
-	    for(int i=0; i<theme_screenshot_urls.length; i++) {
-	    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
-	    	BitmapFactory.Options bmOptions;
-            bmOptions = new BitmapFactory.Options();
-            bmOptions.inSampleSize = 1;
-            Bitmap bm = LoadImage(theme_screenshot_urls[i], bmOptions);
-            ImageView themePreviewImage = (ImageView) layout.findViewById(resID);
-        	themePreviewImage.setImageBitmap(bm);
-        	themePreviewImage.setVisibility(View.VISIBLE);
-	    }
-	    
-	    themeInfoDialog.dismiss();
+	    DownloadScreenshotsTask DownloadScreenshots = new DownloadScreenshotsTask();
+	    DownloadScreenshots.execute(theme_screenshot_urls);
 
-	    builder = new AlertDialog.Builder(this);
-	    builder.setView(layout);
+	    AlertDialog.Builder builder;
+	    builder = new AlertDialog.Builder(AllThemesActivity.this);
+	    builder.setView(layoutDialog);
 	    builder.setTitle(getString(R.string.dialog_download_theme)).setCancelable(false)
 	       .setPositiveButton(getString(R.string.download), new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
@@ -245,10 +236,51 @@ public class AllThemesActivity extends ListActivity {
 	       });
 
 	    alertDialog = builder.create();
-	    alertDialog.show();
 	    
     }
-    
+    private class DownloadScreenshotsTask extends AsyncTask<String, Integer, Void> {
+    	
+        protected Void doInBackground(String... theme_screenshot_urls) {
+        	int count = theme_screenshot_urls.length;
+        	for(int i = 0; i < count; i++) {
+    	    	BitmapFactory.Options bmOptions;
+                bmOptions = new BitmapFactory.Options();
+                bmOptions.inSampleSize = 1;
+                Bitmap bm = LoadImage(theme_screenshot_urls[i], bmOptions);
+                themeScreenshotList.add(bm);
+                publishProgress((int) ((i / (float) count) * 100));
+    	    }
+			return null;
+
+        }
+
+        @Override
+        public void onProgressUpdate(Integer... progress) {
+        	screenshotDownloadProgress.setProgress(progress[0]);
+        }
+        
+        @Override
+    	protected void onPreExecute() {
+    		screenshotDownloadProgress = new ProgressDialog(AllThemesActivity.this);
+    		screenshotDownloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    		screenshotDownloadProgress.setMessage(getString(R.string.dialog_downloading_theme_screenshots) + "...");
+    		screenshotDownloadProgress.setCancelable(false);
+    		screenshotDownloadProgress.show();
+    	}
+        
+        @Override
+        protected void onPostExecute(Void unused) {
+        	screenshotDownloadProgress.dismiss();
+        	for(int i = 0; i < themeScreenshotList.size(); i++) {
+    	    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
+                ImageView themePreviewImage = (ImageView) layoutDialog.findViewById(resID);
+            	themePreviewImage.setImageBitmap(themeScreenshotList.get(i));
+            	themePreviewImage.setVisibility(View.VISIBLE);
+    	    }
+        	alertDialog.show();
+        }
+    }
+
     private class DownloadFileTask extends AsyncTask<String, String, String>{
 
     	private final File SDCARD = Environment.getExternalStorageDirectory();
@@ -310,7 +342,12 @@ public class AllThemesActivity extends ListActivity {
         @Override
         protected void onPostExecute(String unused) {
         	themeDownloadProgress.dismiss();
+        	Context context = getApplicationContext();
+        	CharSequence text = "Theme downloaded to SD Card";
+        	int duration = 3;
+
+        	Toast toast = Toast.makeText(context, text, duration);
+        	toast.show();
         }
     }
 }
-
