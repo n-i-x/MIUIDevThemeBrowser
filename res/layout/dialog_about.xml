@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:id="@+id/DialogAboutRelativeLayout">
+
+	<ImageView android:layout_width="wrap_content"
+	  android:layout_height="wrap_content"
+      android:src="@drawable/miuidev_logo"
+	  android:id="@+id/AboutMIUILogo"
+	  android:layout_centerHorizontal="true" android:layout_alignParentTop="true" android:padding="20px">
+	</ImageView>
+
+	<TextView android:layout_width="wrap_content"
+	  android:layout_centerHorizontal="true"
+	  android:layout_height="wrap_content"
+	  android:layout_below="@+id/AboutMIUILogo" android:id="@+id/AboutDeveloperLabel" android:text="@string/developed_by_label">
+	</TextView>
+
+	<TextView android:layout_width="wrap_content" android:layout_below="@+id/AboutDeveloperLabel" android:layout_centerHorizontal="true" android:layout_height="wrap_content" android:id="@+id/AboutAuthor" android:text="n_i_x" android:padding="10px" android:textSize="18dp"></TextView><TextView android:layout_width="wrap_content"
+	  android:layout_height="wrap_content"
+	  android:layout_centerHorizontal="true"
+      android:id="@+id/AboutWebsite"
+	  android:text="http://www.miui-dev.com"
+	  android:layout_below="@+id/AboutAuthor" android:autoLink="web" android:padding="25px">
+	</TextView>
+
+	<RelativeLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:layout_width="wrap_content"
+	  android:layout_height="wrap_content"
+	  android:layout_gravity="center_horizontal"
+	  android:layout_below="@+id/AboutWebsite"
+	  android:layout_centerHorizontal="true"
+	  android:paddingTop="5px"
+	  android:id="@+id/DialogAboutVersionLayout">
+
+		<TextView android:layout_width="wrap_content"
+		  android:layout_below="@+id/AboutWebsite"
+		  android:layout_height="wrap_content"
+		  android:id="@+id/AboutVersionLabel"
+		  android:text="@string/dialog_about_version"
+		  android:layout_toLeftOf="@+id/AboutVersionLabel"
+		  android:layout_centerHorizontal="false"
+		  android:paddingRight="5px">
+		</TextView>
+
+		<TextView android:layout_width="wrap_content"
+		  android:layout_below="@+id/AboutWebsite"
+		  android:layout_height="wrap_content"
+		  android:layout_toRightOf="@+id/AboutVersionLabel"
+		  android:id="@+id/AboutVersionValue"
+		  android:paddingLeft="5px"
+		  android:text="@string/unknown_value">
+		</TextView>
+
+	</RelativeLayout>
+
+
+</RelativeLayout>
