@@ -23,11 +23,9 @@ package com.miuidev.themebrowser;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -35,8 +33,6 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,23 +40,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.droidfu.widgets.WebImageView;
 import com.google.gson.Gson;
 import com.miuidev.themebrowser.RestClient.RequestMethod;
 
 public class FeaturedThemesActivity extends ListActivity {
-
-	private AlertDialog alertDialog;
-	private View layoutDialog;
-	private ProgressDialog screenshotDownloadProgress = null;
+	
 	private ProgressDialog themeDownloadProgress = null;
 	private ProgressDialog themeListDownloadProgress = null;
-	private ArrayList<Bitmap> themeScreenshotList = null;
     private ArrayList<Theme> themeList = null;
     private ThemeArrayAdapter themeArrayAdapter;
     private Runnable viewThemes;
@@ -93,7 +84,7 @@ public class FeaturedThemesActivity extends ListActivity {
             themeList = new ArrayList<Theme>();
             
             Gson gson = new Gson();
-            final String themeJSON = MainActivity.BASEURL + "/featured.json";
+            final String themeJSON = MIUIDevThemeBrowser.FEATURED_THEMES_JSON;
             RestClient client = new RestClient(themeJSON);
             client.Execute(RequestMethod.GET);
             ThemeList objs = gson.fromJson(client.getResponse(), ThemeList.class);
@@ -121,102 +112,35 @@ public class FeaturedThemesActivity extends ListActivity {
             themeArrayAdapter.notifyDataSetChanged();
         }
       };
-
-    private class ThemeArrayAdapter extends ArrayAdapter<Theme> {
-
-        private ArrayList<Theme> items;
-
-        public ThemeArrayAdapter(Context context, int textViewResourceId, ArrayList<Theme> items) {
-            super(context, textViewResourceId, items);
-            this.items = items;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            if (v == null) {
-                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.theme_list_item, null);
-            }
-            Theme theme = items.get(position);
-            if (theme != null) {
-                TextView themeNameText = (TextView) v.findViewById(R.id.ThemeName);
-                TextView themeAuthorText = (TextView) v.findViewById(R.id.ThemeAuthorValue);
-                TextView themeVersionText = (TextView) v.findViewById(R.id.ThemeVersionValue);
-                TextView themeSizeText = (TextView) v.findViewById(R.id.ThemeSizeValue);
-                ImageView themePreviewImage = (ImageView) v.findViewById(R.id.ListPreviewImage);
-                if (themeNameText != null) {
-                      themeNameText.setText(theme.getThemeName());
-                }
-                if(themeAuthorText != null){
-                      themeAuthorText.setText(theme.getThemeAuthor());
-                }
-                if(themeVersionText != null){
-                    themeVersionText.setText(theme.getThemeVersion());
-                }
-                if(themeSizeText != null){
-                    themeSizeText.setText(theme.getThemeSize());
-                }
-                if(theme.getThemePreviewURL() != null){
-                	BitmapFactory.Options bmOptions;
-                    bmOptions = new BitmapFactory.Options();
-                    bmOptions.inSampleSize = 1;
-                    Bitmap bm = LoadImage(theme.getThemePreviewURL(), bmOptions);
-                	themePreviewImage.setImageBitmap(bm);
-                }
-            }
-            return v;
-        }
-    }
-    
-    public Bitmap LoadImage(String URL, BitmapFactory.Options options) {       
-		Bitmap bitmap = null;
-		InputStream in = null;       
-			try {
-				in = OpenHttpConnection(URL);
-		        bitmap = BitmapFactory.decodeStream(in, null, options);
-		        in.close();
-		    } catch (IOException e1) {}
-		    return bitmap;               
-    }
-    
-    public InputStream OpenHttpConnection(String strURL) throws IOException {
-    	InputStream inputStream = null;
-    	URL url = new URL(strURL);
-    	URLConnection conn = url.openConnection();
-
-    	try {
-    		HttpURLConnection httpConn = (HttpURLConnection)conn;
-    		httpConn.setRequestMethod("GET");
-    		httpConn.connect();
-
-    		if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-    			inputStream = httpConn.getInputStream();
-    		}
-    	} catch (Exception ex) {}
-    	return inputStream;
-    }
     
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
 
+
 	    final Theme theme = themeList.get(position);
 	    final String themeName = theme.getThemeName();
-	    themeScreenshotList = new ArrayList<Bitmap>();
 	    final String themeURL = theme.getThemeURL();
 	    final String[] theme_screenshot_urls = theme.getThemeScreenshotURLs();
 
 	    LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-	    layoutDialog = inflater.inflate(R.layout.dialog_theme_preview,
+	    View layoutDialog = inflater.inflate(R.layout.dialog_theme_preview,
 	                                         (ViewGroup) findViewById(R.id.dialog_theme_preview_layout_root));
 
 	    TextView text = (TextView) layoutDialog.findViewById(R.id.dialog_theme_preview_theme_name);
 	    text.setText(themeName);
 	    
-	    DownloadScreenshotsTask DownloadScreenshots = new DownloadScreenshotsTask();
-	    DownloadScreenshots.execute(theme_screenshot_urls);
+	    for(int i = 0; i < theme_screenshot_urls.length; i++) {
+	    	if (theme_screenshot_urls[i] != null) {
+		    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
+	            WebImageView themePreviewImage = (WebImageView) layoutDialog.findViewById(resID);
+	            themePreviewImage.setVisibility(View.VISIBLE);
+	            themePreviewImage.setImageUrl(theme_screenshot_urls[i]);
+	        	themePreviewImage.loadImage();
+	    	}
+	    }
 
 	    AlertDialog.Builder builder;
+	    AlertDialog alertDialog;
 	    builder = new AlertDialog.Builder(FeaturedThemesActivity.this);
 	    builder.setView(layoutDialog);
 	    builder.setTitle(getString(R.string.dialog_download_theme)).setCancelable(false)
@@ -235,49 +159,8 @@ public class FeaturedThemesActivity extends ListActivity {
 	       });
 
 	    alertDialog = builder.create();
+	    alertDialog.show();
 	    
-    }
-    private class DownloadScreenshotsTask extends AsyncTask<String, Integer, Void> {
-    	
-        protected Void doInBackground(String... theme_screenshot_urls) {
-        	int count = theme_screenshot_urls.length;
-        	for(int i = 0; i < count; i++) {
-    	    	BitmapFactory.Options bmOptions;
-                bmOptions = new BitmapFactory.Options();
-                bmOptions.inSampleSize = 1;
-                Bitmap bm = LoadImage(theme_screenshot_urls[i], bmOptions);
-                themeScreenshotList.add(bm);
-                publishProgress((int) ((i / (float) count) * 100));
-    	    }
-			return null;
-
-        }
-
-        @Override
-        public void onProgressUpdate(Integer... progress) {
-        	screenshotDownloadProgress.setProgress(progress[0]);
-        }
-        
-        @Override
-    	protected void onPreExecute() {
-    		screenshotDownloadProgress = new ProgressDialog(FeaturedThemesActivity.this);
-    		screenshotDownloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    		screenshotDownloadProgress.setMessage(getString(R.string.dialog_downloading_theme_screenshots) + "...");
-    		screenshotDownloadProgress.setCancelable(false);
-    		screenshotDownloadProgress.show();
-    	}
-        
-        @Override
-        protected void onPostExecute(Void unused) {
-        	screenshotDownloadProgress.dismiss();
-        	for(int i = 0; i < themeScreenshotList.size(); i++) {
-    	    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
-                ImageView themePreviewImage = (ImageView) layoutDialog.findViewById(resID);
-            	themePreviewImage.setImageBitmap(themeScreenshotList.get(i));
-            	themePreviewImage.setVisibility(View.VISIBLE);
-    	    }
-        	alertDialog.show();
-        }
     }
 
     private class DownloadFileTask extends AsyncTask<String, String, String>{

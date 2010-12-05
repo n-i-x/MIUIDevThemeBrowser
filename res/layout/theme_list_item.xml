@@ -6,13 +6,13 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:padding="10px">
-              
-	<ImageView android:id="@+id/ListPreviewImage"
-	           android:layout_width="wrap_content"
-	           android:layout_height="wrap_content"
-	           android:src="@drawable/empty_preview_thumb"
-	           android:paddingRight="10px" android:maxHeight="167px" android:maxWidth="100px">
-	           </ImageView>
+
+    <com.github.droidfu.widgets.WebImageView android:id="@+id/ListPreviewImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10px"
+                android:maxHeight="167px"
+                android:maxWidth="100px"/>
 
 	<RelativeLayout android:id="@+id/RelativeLayout01"
                     android:layout_width="wrap_content"

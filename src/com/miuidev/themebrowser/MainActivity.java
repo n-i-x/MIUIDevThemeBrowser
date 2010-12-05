@@ -38,8 +38,6 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 public class MainActivity extends TabActivity {
-
-	public static final String BASEURL = "http://themes.miui-themes.com";
 	
 	/** Called when the activity is first created. */
     @Override
