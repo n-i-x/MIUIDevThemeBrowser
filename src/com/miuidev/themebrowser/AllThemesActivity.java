@@ -1,5 +1,5 @@
 /**
-* This file is part of MIUIDevThemeBrowser.
+ *  This file is part of MIUIDevThemeBrowser.
  *
  *  MIUIDevThemeBrowser is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -89,13 +89,17 @@ public class AllThemesActivity extends ListActivity {
             client.Execute(RequestMethod.GET);
             ThemeList objs = gson.fromJson(client.getResponse(), ThemeList.class);
             for(Theme theme : objs.getThemes()){
-            	themeList.add(theme);
+            	// Protect against malformed JSON
+            	if (theme != null) {
+            		Log.d("MIUIDevThemeBrowser", "Adding theme " + theme.getThemeName() + " to list");
+            		themeList.add(theme);
+            	}
             }
             
             Thread.sleep(2000);
             Log.i("ARRAY", ""+ themeList.size());
           } catch (Exception e) {
-            Log.e("BACKGROUND_PROC", e.getMessage());
+        	  Log.e("BACKGROUND_PROC", e.getMessage());
           }
           runOnUiThread(returnRes);
       }
@@ -130,6 +134,7 @@ public class AllThemesActivity extends ListActivity {
 	    text.setText(themeName);
 	    
 	    for(int i = 0; i < theme_screenshot_urls.length; i++) {
+	    	// Protect against malformed JSON
 	    	if (theme_screenshot_urls[i] != null) {
 		    	int resID = getResources().getIdentifier("ThemePreview" + i, "id", getPackageName());
 	            WebImageView themePreviewImage = (WebImageView) layoutDialog.findViewById(resID);
