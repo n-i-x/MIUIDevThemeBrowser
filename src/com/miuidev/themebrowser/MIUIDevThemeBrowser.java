@@ -21,12 +21,19 @@
 
 package com.miuidev.themebrowser;
 
+import java.io.File;
+
+import android.os.Environment;
+import android.os.StatFs;
+
 import com.github.droidfu.DroidFuApplication;
 
 public class MIUIDevThemeBrowser extends DroidFuApplication {
 
-        public static final String BASEURL = "http://themes.miui-themes.com";
-        public static final String FEATURED_THEMES_JSON = "http://themes.miui-themes.com/featured.json";
-        public static final String ALL_THEMES_JSON = "http://themes.miui-themes.com/allthemes.json";
+        public static final String BASEURL = "http://themes.miui-themes.com/";
+        public static final String FEATURED_THEMES_JSON = BASEURL + "featured.json";
+        public static final String ALL_THEMES_JSON = BASEURL + "allthemes.json";
+        public static final File SDCARD = Environment.getExternalStorageDirectory();
+        public static final StatFs SDCARD_STAT = new StatFs(SDCARD.getAbsolutePath());
 
 }

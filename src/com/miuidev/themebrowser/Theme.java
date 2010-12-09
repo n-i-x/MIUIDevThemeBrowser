@@ -28,7 +28,7 @@ public class Theme {
     private String theme_url;
     private String theme_author;
     private String theme_preview_url;
-    private String theme_size;
+    private long theme_size;
     private String theme_version;
     private String[] theme_screenshot_urls;
    
@@ -56,10 +56,10 @@ public class Theme {
     public void setThemePreviewURL(String theme_preview_url) {
         this.theme_preview_url = theme_preview_url;
     }
-    public String getThemeSize() {
+    public long getThemeSize() {
         return theme_size;
     }
-    public void setThemeSize(String theme_size) {
+    public void setThemeSize(long theme_size) {
         this.theme_size = theme_size;
     }
     public String getThemeVersion() {

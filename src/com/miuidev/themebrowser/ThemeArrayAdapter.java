@@ -77,7 +77,8 @@ public class ThemeArrayAdapter extends ArrayAdapter<Theme> {
             }
             
             if(themeSizeText != null){
-                themeSizeText.setText(theme.getThemeSize());
+            	String displaySize = Utils.formatSize(mContext, theme.getThemeSize());
+                themeSizeText.setText(displaySize);
             }
             
             if(theme.getThemePreviewURL() != null){

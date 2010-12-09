@@ -35,7 +35,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +73,7 @@ public class FeaturedThemesActivity extends ListActivity {
 
         Thread thread =  new Thread(null, viewThemes, "ThemeListGrabber");
         thread.start();
-        themeListDownloadProgress = ProgressDialog.show(FeaturedThemesActivity.this,    
+        themeListDownloadProgress = ProgressDialog.show(this,    
               getString(R.string.dialog_please_wait) + "...", getString(R.string.dialog_download_theme_list)  + "...", true);
 
     }
@@ -146,14 +145,26 @@ public class FeaturedThemesActivity extends ListActivity {
 
 	    AlertDialog.Builder builder;
 	    AlertDialog alertDialog;
-	    builder = new AlertDialog.Builder(FeaturedThemesActivity.this);
+	    builder = new AlertDialog.Builder(this);
 	    builder.setView(layoutDialog);
 	    builder.setTitle(getString(R.string.dialog_download_theme)).setCancelable(false)
-	       .setPositiveButton(getString(R.string.download), new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	                DownloadFileTask DownloadFile = new DownloadFileTask();
-	                DownloadFile.execute(themeURL);
-	                dialog.dismiss();
+	    	.setPositiveButton(getString(R.string.download), new DialogInterface.OnClickListener() {
+	    		public void onClick(DialogInterface dialog, int id) {
+		       	    MIUIDevThemeBrowser.SDCARD_STAT.restat(MIUIDevThemeBrowser.SDCARD.getAbsolutePath());
+		    	    final long availableSD = MIUIDevThemeBrowser.SDCARD_STAT.getAvailableBlocks() * (long) MIUIDevThemeBrowser.SDCARD_STAT.getBlockSize();
+	    	    
+	        	    if (theme.getThemeSize() < availableSD) {
+	        	    	DownloadFileTask DownloadFile = new DownloadFileTask();
+		                DownloadFile.execute(themeURL);
+		                dialog.dismiss();
+	        	    } else {
+	        	    	Context context = getApplicationContext();
+	        	    	CharSequence text = getString(R.string.sd_card_full);
+	        	    	int duration = 3;
+
+	        	    	Toast toast = Toast.makeText(context, text, duration);
+	        	    	toast.show();
+	        	   }
 	           }
 	       })
 	       
@@ -169,8 +180,6 @@ public class FeaturedThemesActivity extends ListActivity {
     }
 
     private class DownloadFileTask extends AsyncTask<String, String, String>{
-
-    	private final File SDCARD = Environment.getExternalStorageDirectory();
     	
         @Override
         protected String doInBackground(String... fileURL) {
@@ -185,7 +194,7 @@ public class FeaturedThemesActivity extends ListActivity {
 
                 int contentLength = connection.getContentLength();
 
-                File outputDir = new File (SDCARD.getAbsoluteFile() + "/MIUI/theme");
+                File outputDir = new File (MIUIDevThemeBrowser.SDCARD.getAbsoluteFile() + "/MIUI/theme");
                 outputDir.mkdirs();
                 String fileName = url.toString().substring( url.toString().lastIndexOf('/')+1, url.toString().length() );
                 File outputFileName = new File(outputDir, fileName);
@@ -229,8 +238,9 @@ public class FeaturedThemesActivity extends ListActivity {
         @Override
         protected void onPostExecute(String unused) {
         	themeDownloadProgress.dismiss();
+
         	Context context = getApplicationContext();
-        	CharSequence text = "Theme downloaded to SD Card";
+        	CharSequence text = getString(R.string.theme_download_success);
         	int duration = 3;
 
         	Toast toast = Toast.makeText(context, text, duration);

@@ -22,4 +22,6 @@
 <string name="dialog_downloading_theme">Downloading Theme</string><string name="dialog_downloading_theme_screenshots">Downloading Screenshots</string>
 <string name="about">About</string>
 <string name="ok">OK</string>
+<string name="theme_download_success">Theme downloaded to SD Card</string>
+<string name="sd_card_full">Not enough free space on SD Card to download theme</string>
 </resources>
