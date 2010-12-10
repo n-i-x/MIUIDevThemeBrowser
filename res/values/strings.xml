@@ -15,13 +15,13 @@
     <string name="label_theme_name">Theme Name:</string>
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">Theme Downloader</string>
-<string name="download">Download</string>
-<string name="cancel">Cancel</string>
-<string name="dialog_please_wait">Please Wait</string>
-<string name="dialog_download_theme_list">Downloading Theme List</string><string name="dialog_download_theme_details">Downloading Theme Details</string><string name="dialog_download_theme">Download Theme</string>
-<string name="dialog_downloading_theme">Downloading Theme</string><string name="dialog_downloading_theme_screenshots">Downloading Screenshots</string>
-<string name="about">About</string>
-<string name="ok">OK</string>
-<string name="theme_download_success">Theme downloaded to SD Card</string>
-<string name="sd_card_full">Not enough free space on SD Card to download theme</string>
+    <string name="download">Download</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_please_wait">Please Wait</string>
+    <string name="dialog_download_theme_list">Downloading Theme List</string><string name="dialog_download_theme_details">Downloading Theme Details</string><string name="dialog_download_theme">Download Theme</string>
+    <string name="dialog_downloading_theme">Downloading Theme</string><string name="dialog_downloading_theme_screenshots">Downloading Screenshots</string>
+    <string name="about">About</string>
+    <string name="ok">OK</string>
+    <string name="theme_download_success">Theme downloaded to SD Card</string>
+    <string name="sd_card_full">Not enough free space on SD Card to download theme</string>
 </resources>
