@@ -41,7 +41,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.droidfu.widgets.WebImageView;
 import com.google.gson.Gson;
@@ -150,21 +149,10 @@ public class AllThemesActivity extends ListActivity {
 	    builder.setTitle(getString(R.string.dialog_download_theme)).setCancelable(false)
 	    	.setPositiveButton(getString(R.string.download), new DialogInterface.OnClickListener() {
 	    		public void onClick(DialogInterface dialog, int id) {
-		       	    MIUIDevThemeBrowser.SDCARD_STAT.restat(MIUIDevThemeBrowser.SDCARD.getAbsolutePath());
-		    	    final long availableSD = MIUIDevThemeBrowser.SDCARD_STAT.getAvailableBlocks() * (long) MIUIDevThemeBrowser.SDCARD_STAT.getBlockSize();
-	    	    
-	        	    if (theme.getThemeSize() < availableSD) {
 	        	    	DownloadFileTask DownloadFile = new DownloadFileTask();
-		                DownloadFile.execute(themeURL);
+	        	    	DownloadFile.themeName = themeName;
+	        	    	DownloadFile.execute(themeURL);
 		                dialog.dismiss();
-	        	    } else {
-	        	    	Context context = getApplicationContext();
-	        	    	CharSequence text = getString(R.string.sd_card_full);
-	        	    	int duration = 3;
-
-	        	    	Toast toast = Toast.makeText(context, text, duration);
-	        	    	toast.show();
-	        	   }
 	           }
 	       })
 	       
@@ -181,9 +169,13 @@ public class AllThemesActivity extends ListActivity {
 
     private class DownloadFileTask extends AsyncTask<String, String, String>{
     	
+    	Context mContext = getApplicationContext();
+    	String themeName = null;
+    	
         @Override
         protected String doInBackground(String... fileURL) {
             int count;
+            long availableSD = MIUIDevThemeBrowser.SDCARD_STAT.getAvailableBlocks() * (long) MIUIDevThemeBrowser.SDCARD_STAT.getBlockSize();
 
             try {
                 URL url = new URL(fileURL[0]);
@@ -193,6 +185,13 @@ public class AllThemesActivity extends ListActivity {
                 connection.connect();
 
                 int contentLength = connection.getContentLength();
+                
+                Log.i("ThemeDownload", "Downloading: " + themeName + "Theme Size: " + contentLength + " Free Space: " + availableSD);
+                
+                if (contentLength > availableSD) {
+        	    	return String.format(getString(R.string.sd_card_full), themeName, Utils.formatSize(mContext, (float) contentLength),
+        	    			Utils.formatSize(mContext, (float) availableSD));
+                }
 
                 File outputDir = new File (MIUIDevThemeBrowser.SDCARD.getAbsoluteFile() + "/MIUI/theme");
                 outputDir.mkdirs();
@@ -218,7 +217,7 @@ public class AllThemesActivity extends ListActivity {
             } catch (Exception e) {
             	Log.e("DownloadThemeTask", e.getMessage());
             }
-            return null;
+            return String.format(getString(R.string.theme_download_success), themeName);
         }
 
         @Override
@@ -228,23 +227,28 @@ public class AllThemesActivity extends ListActivity {
         
         @Override
     	protected void onPreExecute() {
+        	MIUIDevThemeBrowser.SDCARD_STAT.restat(MIUIDevThemeBrowser.SDCARD.getAbsolutePath());
     		themeDownloadProgress = new ProgressDialog(AllThemesActivity.this);
     		themeDownloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    		themeDownloadProgress.setMessage(getString(R.string.dialog_downloading_theme) + "...");
+    		themeDownloadProgress.setMessage(String.format(getString(R.string.dialog_downloading_theme), themeName));
     		themeDownloadProgress.setCancelable(false);
     		themeDownloadProgress.show();
     	}
         
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(String messageCompleted) {
         	themeDownloadProgress.dismiss();
 
-        	Context context = getApplicationContext();
-        	CharSequence text = getString(R.string.theme_download_success);
-        	int duration = 3;
-
-        	Toast toast = Toast.makeText(context, text, duration);
-        	toast.show();
+        	AlertDialog.Builder builder = new AlertDialog.Builder(AllThemesActivity.this);
+        	builder.setMessage(messageCompleted)
+        	       .setCancelable(false)
+        	       .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	        	   dialog.dismiss();
+        	           }
+        	       });
+        	AlertDialog alert = builder.create();
+        	alert.show();
         }
     }
 }
