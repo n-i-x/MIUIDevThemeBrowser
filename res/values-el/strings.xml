@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="developed_by_label">Δημιουργήθηκε από:</string>
+    <string name="dialog_about_version">Έκδοση:</string>
+    <string name="menu_theme_manager">Διαχείρηση θεμάτων</string>
+    <string name="menu_about">Περί</string>
+    <string name="tab_mostdownloaded_themes">Πιο δημοφιλή</string>
+    <string name="tab_all_themes">Όλα</string>
+    <string name="tab_featured_themes">Πρόσφατα</string>
+    <string name="main_no_items">Χωρίς αρχεία προς εμφάνιση</string>
+    <string name="label_theme_version">Έκδοση:</string>
+    <string name="label_theme_size">Μέγεθος:</string>
+    <string name="unknown_value">Άγνωστο</string>
+    <string name="label_theme_author">Δημιουργός:</string>
+    <string name="label_theme_name">Όνομα θέματος:</string>
+    <string name="app_name">Λήψη θεμάτων</string>
+    <string name="download">Λήψη</string>
+    <string name="cancel">Άκυρο</string>
+    <string name="dialog_please_wait">Παρακαλώ περιμέντε</string>
+    <string name="dialog_download_theme_list">Λήψη λίστας θεμάτων</string>
+    <string name="dialog_download_theme_details">Πληροφορίες λήψης θέματος</string>
+    <string name="dialog_download_theme">Λήψη θέματος</string>
+    <string name="dialog_downloading_theme">Λήψη %s</string>
+    <string name="dialog_downloading_theme_screenshots">Λήψη εικόνων</string>
+    <string name="about">Περί</string>
+    <string name="ok">Εντάξει</string>
+    <string name="theme_download_success">Επιτυχής λήψη του %s στην κάρτα SD.\n\nΧρησιμοποιήστε τον διαχειριστή θεμάτων για να επιλέξετε το θέμα.</string>
+    <string name="sd_card_full">%s απαιτέί %s ελεύθερο χώρο. Η κάρτα SD έχει μόνο %s διαθέσιμο. Παρακαλώ ελευθερώστε χώρο και δοκιμάστε πάλι.</string>
+</resources>
