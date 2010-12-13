@@ -17,8 +17,11 @@
     <string name="download">Download</string>
     <string name="cancel">Cancel</string>
     <string name="dialog_please_wait">Please Wait</string>
-    <string name="dialog_download_theme_list">Downloading Theme List</string><string name="dialog_download_theme_details">Downloading Theme Details</string><string name="dialog_download_theme">Download Theme</string>
-    <string name="dialog_downloading_theme">Downloading %s</string><string name="dialog_downloading_theme_screenshots">Downloading Screenshots</string>
+    <string name="dialog_download_theme_list">Downloading Theme List</string>
+    <string name="dialog_download_theme_details">Downloading Theme Details</string>
+    <string name="dialog_download_theme">Download Theme</string>
+    <string name="dialog_downloading_theme">Downloading %s</string>
+    <string name="dialog_downloading_theme_screenshots">Downloading Screenshots</string>
     <string name="about">About</string>
     <string name="ok">OK</string>
     <string name="theme_download_success">Successfully downloaded %s to SD Card.\n\nUse Theme Manager to apply the theme.</string>
