@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="developed_by_label">Erstellt von:</string>
+    <string name="dialog_about_version">Version:</string>
+    <string name="menu_theme_manager">Thema Manager</string>
+    <string name="menu_about">Über</string>
+    <string name="tab_mostdownloaded_themes">Am häufigsten heruntergeladen</string>
+    <string name="tab_all_themes">Alle</string>
+    <string name="tab_featured_themes">Speziell</string>
+    <string name="main_no_items">No items to display</string>
+    <string name="label_theme_version">Version:</string>
+    <string name="label_theme_size">Größe:</string>
+    <string name="unknown_value">Unbekannt</string>
+    <string name="label_theme_author">Autor:</string>
+    <string name="label_theme_name">Thema Name:</string>
+    <string name="app_name">Thema Downloader</string>
+    <string name="download">Download</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="dialog_please_wait">Bitte warten</string>
+    <string name="dialog_download_theme_list">Lade Themen-Liste</string>
+    <string name="dialog_download_theme_details">Lade Theme-Details</string>
+    <string name="dialog_download_theme">Lade Thema</string>
+    <string name="dialog_downloading_theme">Herunterladen %s</string>
+    <string name="dialog_downloading_theme_screenshots">Lade Screenshots</string>
+    <string name="about">Über</string>
+    <string name="ok">OK</string>
+    <string name="theme_download_success">%s erfolgreich heruntergeladen und auf der SD-Karte gespeichert.\n\nVerwende den Thema-Manager, um das Thema zu aktivieren.</string>
+    <string name="sd_card_full">%s benötigt %s an freien Speicher. Auf der SD-Karte sind nur noch %s verfügbar. Sobald mehr Speicherplatz zur Verfügung steht, kann dieser Vorgang wierderholt werden.</string>
+</resources>
