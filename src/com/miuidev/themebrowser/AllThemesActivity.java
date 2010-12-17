@@ -31,8 +31,11 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,13 +44,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.droidfu.widgets.WebImageView;
 import com.google.gson.Gson;
 import com.miuidev.themebrowser.RestClient.RequestMethod;
 
 public class AllThemesActivity extends ListActivity {
-
+	
 	private ProgressDialog themeDownloadProgress = null;
 	private ProgressDialog themeListDownloadProgress = null;
     private ArrayList<Theme> themeList = null;
@@ -242,9 +246,25 @@ public class AllThemesActivity extends ListActivity {
         	AlertDialog.Builder builder = new AlertDialog.Builder(AllThemesActivity.this);
         	builder.setMessage(messageCompleted)
         	       .setCancelable(false)
-        	       .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+        	       .setPositiveButton(getString(R.string.theme_manager), new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
-        	        	   dialog.dismiss();
+        	        	   final Intent intentThemeManager = new Intent("android.intent.action.MAIN");
+	        	           intentThemeManager.setComponent(new ComponentName("com.android.thememanager",
+	        	        		   "com.android.thememanager.ThemeSettingsActivity"));
+	        	           try {
+	        	        	   startActivity(intentThemeManager);
+	        	           } catch (ActivityNotFoundException e) {
+	        	        	   Context context = getApplicationContext();
+	        	        	   CharSequence text = getString(R.string.theme_manager_not_found);
+	        	        	   int duration = Toast.LENGTH_SHORT;
+	        	        	   Toast toast = Toast.makeText(context, text, duration);
+	        	        	   toast.show();
+	        	           }
+        	           }
+        	       })
+        	       .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	        	   dialog.cancel();
         	           }
         	       });
         	AlertDialog alert = builder.create();
