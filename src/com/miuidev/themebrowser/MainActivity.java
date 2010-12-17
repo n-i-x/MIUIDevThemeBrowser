@@ -21,13 +21,25 @@
 
 package com.miuidev.themebrowser;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.apache.http.util.ByteArrayBuffer;
+
 import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,14 +48,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends TabActivity {
+	private Handler mHandler;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tab);
+
+        mHandler = new Handler();
+        checkUpdate.start();
 
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
@@ -67,9 +84,30 @@ public class MainActivity extends TabActivity {
     }
     
     @Override
+    public void onPause() {
+    	mHandler = null;
+    	super.onPause();
+    }
+    
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+        case R.id.MenuThemeManager:
+        	final Intent intentThemeManager = new Intent("android.intent.action.MAIN");
+        	intentThemeManager.setComponent(new ComponentName("com.android.thememanager",
+        			"com.android.thememanager.ThemeSettingsActivity"));
+        	try {
+        		startActivity(intentThemeManager);
+        	} catch (ActivityNotFoundException e) {
+        		Context context = getApplicationContext();
+        		CharSequence text = getString(R.string.theme_manager_not_found);
+        		int duration = Toast.LENGTH_SHORT;
+
+        		Toast toast = Toast.makeText(context, text, duration);
+        		toast.show();
+        	}
+        	return true;
         case R.id.MenuAbout:
             displayAbout();
             return true;
@@ -112,6 +150,58 @@ public class MainActivity extends TabActivity {
         }
         return version;
       }
-
+	
+    private Thread checkUpdate = new Thread() {
+    	public void run() {
+    		try {
+    			URL updateURL = new URL("http://www.miui-themes.com/appversion");
+    			URLConnection conn = updateURL.openConnection();
+    			InputStream is = conn.getInputStream();
+    			BufferedInputStream bis = new BufferedInputStream(is);
+    			ByteArrayBuffer baf = new ByteArrayBuffer(50);
+    			int current = 0;
+    			while ((current = bis.read()) != -1) {
+    				baf.append((byte)current);
+    			}
+    			/* Convert the Bytes read to a String. */
+    			final String s = new String(baf.toByteArray());
+    			
+    			/* Get current Version Number */
+    			int curVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+    			int newVersion = Integer.valueOf(s);
+    			/* Is a higher version than the current already out? */
+    			if (newVersion > curVersion) {
+	    			/* Post a Handler for the UI to pick up and open the Dialog */
+    				if (mHandler != null) {
+    					mHandler.post(showUpdate);
+    				}
+    			}
+    		} catch (Exception e) {
+    			
+    		}
+    	}
+    };
+    
+    /* This Runnable creates a Dialog and asks the user to open the Market */
+    private Runnable showUpdate = new Runnable(){
+    	public void run() {
+    		new AlertDialog.Builder(MainActivity.this)
+    		.setIcon(R.drawable.icon)
+    		.setTitle(getString(R.string.update_available))
+    		.setMessage(getString(R.string.update_available_detail))
+    		.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+    			public void onClick(DialogInterface dialog, int whichButton) {
+    				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://bit.ly/eoVaZn"));
+    				startActivity(intent);
+    			}
+    		})
+    		.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+    			public void onClick(DialogInterface dialog, int whichButton) {
+    				/* User clicked Cancel */
+    			}
+    		})
+    		.show();
+    	}
+    };
 }
 
