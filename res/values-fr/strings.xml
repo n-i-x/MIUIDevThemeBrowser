@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="developed_by_label">Créé par:</string>
+    <string name="dialog_about_version">Version:</string>
+    <string name="menu_theme_manager">Gestionnaire de thèmes</string>
+    <string name="menu_about">A propos</string>
+    <string name="tab_mostdownloaded_themes">Les plus téléchargés</string>
+    <string name="tab_all_themes">Tout</string>
+    <string name="tab_featured_themes">Mis en avant</string>
+    <string name="main_no_items">Aucun élément disponible</string>
+    <string name="label_theme_version">Version:</string>
+    <string name="label_theme_size">Taille:</string>
+    <string name="unknown_value">Inconnu</string>
+    <string name="label_theme_author">Auteur:</string>
+    <string name="label_theme_name">Nom du thème:</string>
+    <string name="app_name">Téléchargement de thèmes</string>
+    <string name="download">Téléchargement</string>
+    <string name="cancel">Annuler</string>
+    <string name="dialog_please_wait">Veuillez patienter</string>
+    <string name="dialog_download_theme_list">Récupération de la liste des thèmes</string>
+    <string name="dialog_download_theme_details">Téléchargement des détails du thème</string>
+    <string name="dialog_download_theme">Téléchargement du thème</string>
+    <string name="dialog_downloading_theme">Télécharge %s</string>
+    <string name="dialog_downloading_theme_screenshots">Téléchargement des captures d\'écran</string>
+    <string name="about">A propos</string>
+    <string name="ok">OK</string>
+    <string name="theme_download_success">Téléchargement de %s sur la carte SD effectué.\n\nUtilisez le gestionnaire de thème pour l\'appliquer.</string>
+    <string name="sd_card_full">%s a besoin de  %s d\'espace disque. La carte SD n\'a que %s de disponible. Veuillez libérer de l\'espace puis réésayer.</string>
+    <string name="update_available">Mise à jour disponible</string>
+    <string name="update_available_detail">Une mise à jour pour cette application est disponible!\n\nVoulez-vous la télécharger?</string>
+    <string name="menu_refresh">Actualiser</string>
+    <string name="theme_manager">Gestionnaire de thèmes</string>
+    <string name="theme_manager_not_found">Le gestionnaire de thème n\'est pas installer!</string>
+</resources>
